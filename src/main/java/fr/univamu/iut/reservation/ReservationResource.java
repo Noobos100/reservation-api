@@ -1,5 +1,7 @@
 package fr.univamu.iut.reservation;
 
+import fr.univamu.iut.book.BookRepositoryInterface;
+import fr.univamu.iut.user.UserRepositoryInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -28,8 +30,8 @@ public class ReservationResource {
      * Constructeur permettant d'initialiser le service avec les interfaces d'accès aux données
      * @param reservationRepo objet implémentant l'interface d'accès aux données des réservations
      */
-    public @Inject ReservationResource(ReservationRepositoryInterface reservationRepo){
-        this.service = new ReservationService( reservationRepo ) ;
+    public @Inject ReservationResource(ReservationRepositoryInterface reservationRepo, BookRepositoryInterface bookRepo, UserRepositoryInterface userRepo){
+        this.service = new ReservationService( reservationRepo, bookRepo, userRepo) ;
     }
 
     /**
@@ -61,5 +63,36 @@ public class ReservationResource {
            return "{}";
 
         return result;
+    }
+
+    /**
+     * Enpoint permettant de soumettre une nouvelle réservation de livre demandée par un utilisateur enregistré
+     * @param id identifiant de l'utilisateur souhaitant faire la réservation
+     * @param reference référence du livre à réserver
+     * @return un objet Response indiquant "registred" si la réservation a été faite ou une erreur "conflict" sinon
+     */
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    public Response registerReservation(@FormParam("id") String id, @FormParam("reference") String reference){
+
+        if( service.registerReservation(id, reference) )
+            return Response.ok("registered").build();
+        else
+            return Response.status( Response.Status.CONFLICT ).build();
+    }
+
+    /**
+     * Endpoint permettant de supprimer une réservation
+     * @param reference référence du livre à "libérer"
+     * @return un objet Response indiquant "removed" si la réservation a été annulée ou une erreur "not found" sinon
+     */
+    @DELETE
+    @Path("{reference}")
+    public Response removeReservation(@PathParam("reference") String reference){
+
+        if( service.removeReservation(reference) )
+            return Response.ok("removed").build();
+        else
+            return Response.status( Response.Status.NOT_FOUND ).build();
     }
 }

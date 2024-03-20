@@ -1,5 +1,9 @@
 package fr.univamu.iut.reservation;
 
+import fr.univamu.iut.book.BookRepositoryAPI;
+import fr.univamu.iut.book.BookRepositoryInterface;
+import fr.univamu.iut.user.UserRepositoryAPI;
+import fr.univamu.iut.user.UserRepositoryInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
@@ -35,6 +39,24 @@ public class ReservationApplication extends Application {
      */
     private void closeDbConnection(@Disposes ReservationRepositoryInterface userRepo ) {
         userRepo.close();
+    }
+
+    /**
+     * Méthode appelée par l'API CDI pour injecter l'API Book au moment de la création de la ressource
+     * @return une instance de l'API avec l'url à utiliser
+     */
+    @Produces
+    private BookRepositoryInterface connectBookApi(){
+        return new BookRepositoryAPI("http://localhost:8080/book-1.0-SNAPSHOT/api/");
+    }
+
+    /**
+     * Méthode appelée par l'API CDI pour injecter l'API User au moment de la création de la ressource
+     * @return une instance de l'API avec l'url à utiliser
+     */
+    @Produces
+    private UserRepositoryInterface connectUserApi(){
+        return new UserRepositoryAPI("http://localhost:8080/user-1.0-SNAPSHOT/api/");
     }
 
 }

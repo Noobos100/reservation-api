@@ -66,4 +66,32 @@ public class ReservationRepositoryMariadb implements ReservationRepositoryInterf
         return reservations;
     }
 
+    @Override
+    public boolean registerReservation(String id, String reference) {
+        try {
+            PreparedStatement stmt = dbConnection.prepareStatement("INSERT INTO Reservation (id, date, reference) VALUES (?, ?, ?)");
+            stmt.setString(1, id);
+            stmt.setString(2, new Date(System.currentTimeMillis()).toString());
+            stmt.setString(3, reference);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean releaseReservation(String reference) {
+        try {
+            PreparedStatement stmt = dbConnection.prepareStatement("DELETE FROM Reservation WHERE reference = ?");
+            stmt.setString(1, reference);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return false;
+    }
+
 }

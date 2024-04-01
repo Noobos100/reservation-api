@@ -35,7 +35,7 @@ public class ReservationResource {
     }
 
     /**
-     * Enpoint permettant de publier de toutes les réservations enregistrées
+     * Endpoint permettant de publier de toutes les réservations enregistrées
      * @return la liste des livres (avec leurs informations) au format JSON
      */
     @GET
